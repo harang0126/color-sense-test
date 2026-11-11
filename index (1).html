@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>절대 색감 테스트</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Jua&display=swap">
+<style>
+:root{--bg:#f3f1ee;--panel:#ffffff;--ink:#23211f;--sub:#7a746d;--line:#dcd7d0;--btn:#23211f;--btn-ink:#f3f1ee;--warn:#d64545;--ring:#fff;color-scheme:light;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#1b1a19;--panel:#262523;--ink:#f1eeea;--sub:#a29b92;--line:#3a3834;--btn:#f1eeea;--btn-ink:#1b1a19;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#1b1a19;--panel:#262523;--ink:#f1eeea;--sub:#a29b92;--line:#3a3834;--btn:#f1eeea;--btn-ink:#1b1a19;color-scheme:dark}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--ring:rgba(255,255,255,.4)}:root:not([data-theme="light"]) .dots i{filter:brightness(.88)}}
+:root[data-theme="dark"]{--ring:rgba(255,255,255,.4)}
+:root[data-theme="dark"] .dots i{filter:brightness(.88)}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Jua","Apple SD Gothic Neo","Malgun Gothic",system-ui,sans-serif;min-height:100vh;display:flex;justify-content:center}
+main{width:100%;max-width:460px;padding:20px 18px 28px;display:flex;flex-direction:column;gap:16px}
+.bar{display:flex;justify-content:space-between;align-items:baseline}
+h1{font-size:28px;margin:0;font-weight:400}
+.stats{display:flex;gap:14px;color:var(--sub);font-size:16px}
+.stats b{color:var(--ink);font-weight:400;font-size:22px}
+.seg{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:5px}
+.seg button{border:0;background:transparent;color:var(--sub);font:inherit;font-size:17px;padding:9px 4px;border-radius:10px;cursor:pointer}
+.seg button[aria-pressed="true"]{background:var(--btn);color:var(--btn-ink)}
+.seg button:focus-visible{outline:3px solid var(--ink);outline-offset:2px}
+.seg button:disabled{cursor:default}
+.seg button[aria-pressed="false"]:disabled{opacity:.4}
+.timer{display:flex;align-items:center;gap:10px;font-size:17px}
+.timer .t{min-width:58px;text-align:right}
+.track{flex:1;height:8px;border-radius:4px;background:var(--line);overflow:hidden}
+.fill{height:100%;width:100%;background:var(--ink)}
+.fill.low{background:var(--warn)}
+.swatches{display:grid;grid-template-columns:1fr 1fr;gap:2px;background:var(--line);border-radius:22px;overflow:hidden;border:1px solid var(--line);height:180px}
+.sw{position:relative}
+.sw span{position:absolute;left:12px;bottom:10px;background:var(--panel);color:var(--sub);font-size:14px;padding:3px 10px;border-radius:10px}
+.sliders{display:flex;flex-direction:column;gap:14px;background:var(--panel);border-radius:20px;padding:18px 18px 14px;border:1px solid var(--line)}
+.row label{display:flex;justify-content:space-between;font-size:17px;margin-bottom:8px}
+.row label output{color:var(--sub)}
+input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:30px;border-radius:15px;outline:none;margin:0;border:1px solid var(--line)}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:30px;height:30px;border-radius:50%;background:#fff;border:3px solid #23211f;cursor:grab;box-shadow:0 0 0 2px var(--ring)}
+input[type=range]::-moz-range-thumb{width:24px;height:24px;border-radius:50%;background:#fff;border:3px solid #23211f;cursor:grab;box-shadow:0 0 0 2px var(--ring)}
+input[type=range]:focus-visible{outline:3px solid var(--ink);outline-offset:3px}
+input[type=range]:disabled{opacity:.4;cursor:default;pointer-events:none}
+button.go{width:100%;padding:15px;border:0;border-radius:14px;background:var(--btn);color:var(--btn-ink);font:inherit;font-size:20px;cursor:pointer}
+button.go:focus-visible{outline:3px solid var(--sub);outline-offset:3px}
+.result{display:none;text-align:center;background:var(--panel);border:1px solid var(--line);border-radius:20px;padding:16px}
+.result.show{display:block}
+.result .big{font-size:52px;line-height:1.1}
+.result p{margin:6px 0 0;color:var(--sub);font-size:16px}
+.hint{text-align:center;color:var(--sub);font-size:15px;margin:0}
+.cover{position:fixed;inset:0;z-index:20;background:var(--bg);display:flex;align-items:center;justify-content:center;padding:calc(20px + env(safe-area-inset-top,0px)) 18px calc(20px + env(safe-area-inset-bottom,0px));overflow:auto}
+.cwrap{width:100%;max-width:420px;display:flex;flex-direction:column;gap:18px;text-align:center}
+.dots{display:grid;grid-template-columns:repeat(6,1fr);gap:8px}
+.dots i{aspect-ratio:1/1;border-radius:14px;display:block}
+.ey{margin:0;letter-spacing:.18em;color:var(--sub);font-size:14px}
+.cwrap h2{margin:0;font-weight:400;font-size:42px;line-height:1.15}
+.cwrap .lead{margin:0;color:var(--sub);font-size:17px;line-height:1.5}
+.cinfo{margin:0;color:var(--sub);font-size:15px;min-height:22px}
+.ghost{align-self:center;border:0;background:transparent;color:var(--sub);font:inherit;font-size:16px;padding:8px 14px;cursor:pointer;text-decoration:underline;text-underline-offset:3px}
+.ghost:focus-visible{outline:3px solid var(--ink);outline-offset:2px;border-radius:8px}
+.confirm{position:fixed;inset:0;z-index:30;background:rgba(0,0,0,.5);align-items:center;justify-content:center;padding:20px}
+.ccard{background:var(--panel);border:1px solid var(--line);border-radius:20px;padding:22px;width:100%;max-width:340px;text-align:center}
+.ccard p{margin:0 0 6px;font-size:21px}
+.ccard .csub{color:var(--sub);font-size:16px;margin-bottom:16px}
+.cbtns{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.cbtns button{padding:13px;border-radius:14px;font:inherit;font-size:18px;cursor:pointer}
+.cbtns .ghost2{border:1px solid var(--line);background:transparent;color:var(--ink)}
+.cbtns button:focus-visible{outline:3px solid var(--ink);outline-offset:2px}
+</style>
+</head>
+<body>
+<main>
+  <div class="bar">
+    <h1>절대 색감 테스트</h1>
+    <div class="stats"><span>라운드 <b id="rd">1</b>/<span id="rmax">10</span></span><span>합계 <b id="total">0</b></span></div>
+  </div>
+
+  <div class="seg" role="group" aria-label="난이도">
+    <button type="button" data-d="easy" aria-pressed="false">쉬움</button>
+    <button type="button" data-d="normal" aria-pressed="true">보통</button>
+    <button type="button" data-d="hard" aria-pressed="false">어려움</button>
+  </div>
+
+  <div class="timer"><div class="track" aria-hidden="true"><div class="fill" id="fill"></div></div><div class="t" id="tt">60초</div></div>
+
+  <div class="swatches">
+    <div class="sw" id="swT"><span>목표 색</span></div>
+    <div class="sw" id="swM"><span>내 색</span></div>
+  </div>
+
+  <div class="sliders">
+    <div class="row"><label for="h">색상 <output id="hv">0</output></label><input type="range" id="h" min="0" max="360" value="0"></div>
+    <div class="row"><label for="s">채도 <output id="sv">50</output></label><input type="range" id="s" min="0" max="100" value="50"></div>
+    <div class="row"><label for="l">밝기 <output id="lv">50</output></label><input type="range" id="l" min="0" max="100" value="50"></div>
+  </div>
+
+  <div class="result" id="result" aria-live="polite">
+    <div class="big" id="pts">0</div>
+    <p id="detail"></p>
+  </div>
+
+  <button class="go" id="btn">확인</button>
+  <p class="hint" id="hint"></p>
+  <button class="ghost" id="back" type="button">표지로 돌아가기</button>
+</main>
+
+<div class="cover" id="cover" role="dialog" aria-modal="true" aria-labelledby="ctitle">
+  <div class="cwrap">
+    <div class="dots" aria-hidden="true">
+      <i style="background:hsl(0,72%,56%)"></i><i style="background:hsl(30,80%,56%)"></i><i style="background:hsl(55,78%,54%)"></i><i style="background:hsl(95,55%,50%)"></i><i style="background:hsl(150,55%,45%)"></i><i style="background:hsl(185,65%,48%)"></i>
+      <i style="background:hsl(210,72%,56%)"></i><i style="background:hsl(240,60%,62%)"></i><i style="background:hsl(270,58%,60%)"></i><i style="background:hsl(300,52%,58%)"></i><i style="background:hsl(330,68%,60%)"></i><i style="background:hsl(350,70%,58%)"></i>
+    </div>
+    <p class="ey">COLOR SENSE TEST</p>
+    <h2 id="ctitle">절대 색감 테스트</h2>
+    <p class="lead">슬라이드를 움직여서 목표 색을 똑같이 만들어 보세요.<br>내 눈은 얼마나 정확할까요?</p>
+    <div class="seg" role="group" aria-label="난이도 선택">
+      <button type="button" data-d="easy" aria-pressed="false">쉬움</button>
+      <button type="button" data-d="normal" aria-pressed="true">보통</button>
+      <button type="button" data-d="hard" aria-pressed="false">어려움</button>
+    </div>
+    <p class="cinfo" id="cinfo"></p>
+    <button class="go" id="cstart" type="button">시작하기</button>
+  </div>
+</div>
+
+<div class="confirm" id="confirm" role="alertdialog" aria-modal="true" aria-labelledby="cq" style="display:none">
+  <div class="ccard">
+    <p id="cq">정말 표지로 돌아갈까요?</p>
+    <p class="csub">진행 중인 점수는 저장되지 않고 사라져요.</p>
+    <div class="cbtns">
+      <button type="button" class="ghost2" id="cno">계속하기</button>
+      <button type="button" class="go" id="cyes">돌아가기</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  var ROUNDS=10, MAXTOTAL=500, ROUNDSET={easy:20,normal:10,hard:5}, PLAY=40, WAIT=10, TIMES={easy:30,normal:40,hard:50};
+  var DIFF={easy:"쉬움",normal:"보통",hard:"어려움"};
+  var HINTS={easy:"쉬움: 색상 슬라이드만 움직여요. 채도와 밝기는 목표와 같게 고정돼 있어요.",normal:"보통: 색상과 채도를 맞춰요. 밝기는 고정돼 있어요.",hard:"어려움: 색상, 채도, 밝기를 모두 맞춰야 해요."};
+  var backTimer=null, started=false, diff="normal", round=1, total=0, best={}, phase="play", target=null, deadline=0, timer=null;
+  var $=function(id){return document.getElementById(id)};
+  var H=$("h"), S=$("s"), L=$("l");
+  try{best=JSON.parse(localStorage.getItem("colorslider-best3")||"{}")||{}}catch(e){best={}}
+
+  function rnd(a,b){return a+Math.random()*(b-a)}
+  function css(h,s,l){return "hsl("+h+","+s+"%,"+l+"%)"}
+  function toRgb(h,s,l){
+    s/=100; l/=100;
+    var k=function(n){return (n+h/30)%12};
+    var a=s*Math.min(l,1-l);
+    var f=function(n){return l-a*Math.max(-1,Math.min(k(n)-3,Math.min(9-k(n),1)))};
+    return [f(0)*255,f(8)*255,f(4)*255];
+  }
+  function hex(rgb){return "#"+rgb.map(function(v){var x=Math.round(v).toString(16);return x.length<2?"0"+x:x}).join("")}
+
+  function paintTracks(){
+    var h=+H.value, s=+S.value;
+    H.style.background="linear-gradient(90deg,hsl(0,"+s+"%,50%),hsl(60,"+s+"%,50%),hsl(120,"+s+"%,50%),hsl(180,"+s+"%,50%),hsl(240,"+s+"%,50%),hsl(300,"+s+"%,50%),hsl(360,"+s+"%,50%))";
+    S.style.background="linear-gradient(90deg,"+css(h,0,50)+","+css(h,100,50)+")";
+    L.style.background="linear-gradient(90deg,#000,"+css(h,s,50)+",#fff)";
+  }
+  function update(){
+    $("hv").textContent=H.value; $("sv").textContent=S.value; $("lv").textContent=L.value;
+    $("swM").style.background=css(H.value,S.value,L.value);
+    paintTracks();
+  }
+  function setBar(left,max){
+    $("fill").style.width=Math.max(0,left/max*100)+"%";
+    $("fill").classList.toggle("low",phase==="play"&&started&&left<=10);
+  }
+  function stopTimer(){clearInterval(timer);timer=null}
+
+  function startPlayTimer(){
+    stopTimer();
+    deadline=Date.now()+PLAY*1000;
+    timer=setInterval(function(){
+      var left=(deadline-Date.now())/1000;
+      if(left<=0){ $("tt").textContent="0초"; setBar(0,PLAY); check(true); return; }
+      $("tt").textContent=Math.ceil(left)+"초"; setBar(left,PLAY);
+    },100);
+  }
+  function onInput(){
+    update();
+    if(phase==="play"&&!started){ started=true; startPlayTimer(); }
+  }
+  function startWaitTimer(){
+    stopTimer();
+    deadline=Date.now()+WAIT*1000;
+    var label=round>=ROUNDS?"결과 보기":"다음 라운드";
+    timer=setInterval(function(){
+      var left=(deadline-Date.now())/1000;
+      if(left<=0){ stopTimer(); advance(); return; }
+      $("tt").textContent="대기 "+Math.ceil(left)+"초"; setBar(left,WAIT);
+      $("btn").textContent=label+" ("+Math.ceil(left)+")";
+    },100);
+  }
+
+  function lockSeg(){
+    document.querySelectorAll("main .seg button").forEach(function(x){x.disabled=(phase!=="over")});
+  }
+  function lockSliders(){
+    S.disabled = (diff==="easy");
+    L.disabled = (diff!=="hard");
+    H.disabled = false;
+    if(S.disabled) S.value=target.s;
+    if(L.disabled) L.value=target.l;
+  }
+  function newRound(){
+    PLAY=TIMES[diff]; ROUNDS=ROUNDSET[diff]; $("rmax").textContent=ROUNDS;
+    target={h:Math.round(rnd(0,360)),s:Math.round(rnd(25,95)),l:Math.round(rnd(22,78))};
+    $("swT").style.background=css(target.h,target.s,target.l);
+    H.value=0; S.value=50; L.value=50;
+    phase="play";
+    lockSeg();
+    lockSliders();
+    $("result").classList.remove("show");
+    $("rd").textContent=round;
+    $("btn").textContent="확인";
+    $("hint").textContent=HINTS[diff]+" 슬라이드를 처음 움직이면 "+PLAY+"초 타이머가 시작돼요.";
+    started=false;
+    update();
+    stopTimer(); $("tt").textContent=PLAY+"초"; setBar(PLAY,PLAY);
+  }
+  function score(){
+    var a=toRgb(target.h,target.s,target.l), b=toRgb(+H.value,+S.value,+L.value);
+    var d=Math.sqrt(Math.pow(a[0]-b[0],2)+Math.pow(a[1]-b[1],2)+Math.pow(a[2]-b[2],2));
+    return {pts:Math.round(100*Math.exp(-d/70)),a:hex(a),b:hex(b)};
+  }
+  function check(timeout){
+    if(phase!=="play") return;
+    phase="done"; stopTimer();
+    var r=score(); var gain=r.pts*MAXTOTAL/ROUNDS/100; total+=gain;
+    $("total").textContent=Math.round(total);
+    $("pts").textContent=(Math.round(gain*10)/10)+"점";
+    var cmt=r.pts>=95?"거의 완벽해요!":r.pts>=80?"아주 가까워요":r.pts>=60?"괜찮아요, 조금만 더":"많이 달랐어요";
+    $("detail").textContent=(timeout?"시간 종료 · ":"")+cmt+" · 정확도 "+r.pts+"% · 목표 "+r.a+" / 내 색 "+r.b;
+    $("result").classList.add("show");
+    [H,S,L].forEach(function(e){e.disabled=true});
+    $("hint").textContent="10초 동안 결과를 살펴본 뒤 자동으로 넘어가요. 바로 넘어가려면 버튼을 누르세요.";
+    startWaitTimer();
+  }
+  function advance(){
+    stopTimer();
+    if(round>=ROUNDS) finish(); else { round++; newRound(); }
+  }
+  function finish(){
+    phase="over";
+    lockSeg();
+    total=Math.round(total); var prev=best[diff]||0, isBest=total>prev;
+    if(isBest){best[diff]=total; try{localStorage.setItem("colorslider-best3",JSON.stringify(best))}catch(e){}}
+    $("pts").textContent=total+" / "+MAXTOTAL;
+    $("detail").textContent=DIFF[diff]+" · "+(isBest?"새로운 최고 기록이에요!":"최고 기록 "+prev+"점");
+    $("result").classList.add("show");
+    $("btn").textContent="다시 하기";
+    $("tt").textContent="끝"; setBar(0,1);
+    var n=5; $("hint").textContent=n+"초 뒤 표지로 돌아가요.";
+    clearInterval(backTimer);
+    backTimer=setInterval(function(){ n--; if(n<=0){ goCover(); } else { $("hint").textContent=n+"초 뒤 표지로 돌아가요."; } },1000);
+  }
+  function restart(){
+    clearInterval(backTimer); stopTimer(); round=1; total=0; $("total").textContent=0; newRound();
+  }
+
+  $("btn").addEventListener("click",function(){
+    if(phase==="play") check(false);
+    else if(phase==="done") advance();
+    else restart();
+  });
+  document.querySelectorAll(".seg button").forEach(function(b){
+    b.addEventListener("click",function(){
+      diff=b.getAttribute("data-d");
+      document.querySelectorAll(".seg button").forEach(function(x){x.setAttribute("aria-pressed",x.getAttribute("data-d")===diff?"true":"false")});
+      restart();
+    });
+  });
+  [H,S,L].forEach(function(e){e.addEventListener("input",onInput)});
+  var CH={easy:"색상만 조절",normal:"색상·채도 조절",hard:"색상·채도·밝기 조절"};
+  function coverInfo(){ $("cinfo").textContent=ROUNDSET[diff]+"라운드 · 라운드당 "+TIMES[diff]+"초 · "+CH[diff]+" · "+MAXTOTAL+"점 만점"; }
+  document.querySelectorAll(".seg button").forEach(function(b){b.addEventListener("click",coverInfo)});
+  $("cstart").addEventListener("click",function(){ $("cover").style.display="none"; restart(); });
+  function goCover(){ clearInterval(backTimer); stopTimer(); phase="over"; $("confirm").style.display="none"; coverInfo(); $("cover").style.display="flex"; $("cstart").focus(); }
+  $("back").addEventListener("click",function(){ if(phase==="over") goCover(); else { $("confirm").style.display="flex"; $("cno").focus(); } });
+  $("cno").addEventListener("click",function(){ $("confirm").style.display="none"; });
+  $("cyes").addEventListener("click",goCover);
+  coverInfo();
+  newRound();
+})();
+</script>
+</body>
+</html>
